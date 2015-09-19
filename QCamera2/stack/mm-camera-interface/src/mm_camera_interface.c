@@ -1464,7 +1464,6 @@ uint8_t get_num_of_cameras()
     int8_t num_cameras = 0;
     char subdev_name[32];
     int32_t sd_fd = 0;
-    struct sensor_init_cfg_data cfg;
     char prop[PROPERTY_VALUE_MAX];
     uint32_t temp;
     uint32_t log_level;
@@ -1532,11 +1531,6 @@ uint8_t get_num_of_cameras()
             }
             CDBG_ERROR("entity name %s type %d group id %d",
                 entity.name, entity.type, entity.group_id);
-            if (entity.type == MEDIA_ENT_T_V4L2_SUBDEV &&
-                entity.group_id == MSM_CAMERA_SUBDEV_SENSOR_INIT) {
-                snprintf(subdev_name, sizeof(dev_name), "/dev/%s", entity.name);
-                break;
-            }
         }
         close(dev_fd);
         dev_fd = 0;
@@ -1549,11 +1543,6 @@ uint8_t get_num_of_cameras()
         return FALSE;
     }
 
-    cfg.cfgtype = CFG_SINIT_PROBE_WAIT_DONE;
-    cfg.cfg.setting = NULL;
-    if (ioctl(sd_fd, VIDIOC_MSM_SENSOR_INIT_CFG, &cfg) < 0) {
-        CDBG_ERROR("failed");
-    }
     close(sd_fd);
     dev_fd = 0;
 
